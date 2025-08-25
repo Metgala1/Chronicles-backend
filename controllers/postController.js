@@ -108,3 +108,40 @@ exports.deletePost = async (req,res) => {
         res.status(500).json({error: error.message})
     }
 }
+
+/**
+ * Toggle publish/unpublish a post
+ * - Only post author can perform this action
+ */
+
+exports.togglePublish = async (req,res) => {
+    try{
+        const {id} = req.params;
+        const userId = req.user.id;
+
+        const post = await prisma.post.findUnique({
+            where: {id: Number(id)}
+        })
+
+        if(!post){
+            return res.status(404).json({message: "Post not found"})
+        }
+
+        if(post.authorId !== req.user.id){
+            return res.json({message: "Not authorized"})
+        }
+
+        const updatePost = await prisma.post.update({
+            where: {id: Number(id)},
+            data: {published: !post.published}
+        });
+
+        res.json({
+              message: `Post is now ${updatedPost.published ? "published" : "unpublished"}`,
+              post: updatePost
+        });
+    }catch(err){
+        console.error(err)
+        res.status(500).json({message: "Failed to toggle published", error: error.message})
+    }
+}
