@@ -48,6 +48,7 @@ exports.getPostById = async (req,res) => {
                 comments: true
             }
         })
+        res.json(post)
     }catch(err){
         console.error(err)
         res.status(500).json({error: error.message})
