@@ -6,7 +6,7 @@ const postController = require("../controllers/postController")
 router.get("/" , postController.getAllPosts);
 router.get("/:id", postController.getPostById)
 
-router.post("/", verifyToken, isAuthor, postController.createPost);
+router.post("/", verifyToken, postController.createPost);
 router.put("/:id", verifyToken, isAuthor, postController.updatePost);
 router.delete("/:id", verifyToken, isAuthor, postController.deletePost)
 router.patch("/:id/publish", verifyToken, isAuthor, postController.togglePublish)
