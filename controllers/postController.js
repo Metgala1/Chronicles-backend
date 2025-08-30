@@ -1,25 +1,27 @@
 const prisma = require("../client/pool")
 
 exports.createPost = async (req, res) => {
-    try{
-        const {title, content} = req.body;
+  try {
+    const { title, content, published } = req.body;
 
-        if(!title || !content){
-            return res.status(400).json({message: "Title and content are required"})
-        }
-
-        const newPost = await prisma.post.create({
-            data:{
-                title: title,
-                content: content,
-                authorId: req.user.id,
-            }
-        });
-        res.status(201).json(newPost)
-    }catch(err){
-        console.error(err)
-        res.status(500).json({error: error.message})
+    if (!title || !content) {
+      return res.status(400).json({ message: "Title and content are required" });
     }
+
+    const newPost = await prisma.post.create({
+      data: {
+        title,
+        content,
+        published: published ?? false,
+        authorId: req.user.id, // comes from verifyToken
+      },
+    });
+
+    return res.status(201).json(newPost);
+  } catch (err) {
+    console.error("Error creating post:", err);
+    return res.status(500).json({ error: err.message });
+  }
 };
 
 exports.getAllPosts = async (req,res) => {
