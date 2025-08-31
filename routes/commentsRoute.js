@@ -1,7 +1,7 @@
 const {Router} = require("express");
 const router = Router();
 const commentController = require("../controllers/commentController");
-const {verifyToken} = require("../middleware/authMiddleware")
+const {verifyToken, isAuthor} = require("../middleware/authMiddleware")
 
 router.get("/post/:postId", verifyToken, commentController.getCommentsByPost)
 

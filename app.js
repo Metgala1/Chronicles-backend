@@ -3,7 +3,6 @@ const morgan = require('morgan');
 const cors = require('cors');
 const dotenv = require('dotenv');
 
-// imported routes
 const authRoutes = require("./routes/authRoute");
 const postRoutes = require("./routes/postRoute");
 const commentRoutes = require("./routes/commentsRoute");
@@ -11,8 +10,25 @@ const commentRoutes = require("./routes/commentsRoute");
 dotenv.config();
 const app = express();
 
-// middlewares
-app.use(cors());
+
+const allowedOrigins = [
+  "http://localhost:5173", 
+  "https://chronicles-frontend-production.up.railway.app",
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+}));
+
+// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
