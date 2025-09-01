@@ -1,8 +1,13 @@
 const prisma = require("../client/pool")
+const upload = require("../middleware/upload")
 
 exports.createPost = async (req, res) => {
   try {
     const { title, content, published } = req.body;
+    let imageUrl = null;
+    if(req.file){
+        imageUrl = `/uploads/${req.file.filename}`
+    }
 
     if (!title || !content) {
       return res.status(400).json({ message: "Title and content are required" });
@@ -13,7 +18,8 @@ exports.createPost = async (req, res) => {
         title,
         content,
         published: published ?? false,
-        authorId: req.user.id, // comes from verifyToken
+        imageUrl,
+        authorId: req.user.id, 
       },
     });
 
