@@ -1,25 +1,28 @@
 const prisma = require("../client/pool")
-const upload = require("../middleware/upload")
 
 exports.createPost = async (req, res) => {
   try {
     const { title, content, published } = req.body;
     let imageUrl = null;
-    if(req.file){
-        imageUrl = `/uploads/${req.file.filename}`
+    if (req.file) {
+      imageUrl = `/uploads/${req.file.filename}`;
     }
 
     if (!title || !content) {
       return res.status(400).json({ message: "Title and content are required" });
     }
 
+    // --- FIX START: Convert the string 'published' to a boolean
+    const publishedBoolean = published === 'true';
+    // --- FIX END
+
     const newPost = await prisma.post.create({
       data: {
         title,
         content,
-        published: published ?? false,
+        published: publishedBoolean, // Use the new boolean value
         imageUrl,
-        authorId: req.user.id, 
+        authorId: req.user.id,
       },
     });
 
@@ -29,6 +32,7 @@ exports.createPost = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
+
 
 exports.getAllPosts = async (req,res) => {
     try{
