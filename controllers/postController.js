@@ -31,10 +31,6 @@ exports.createPost = async (req, res) => {
   }
 };
 
-
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
-
 exports.getAllPosts = async (req, res) => {
     try {
         const { limit = 10, offset = 0 } = req.query;
@@ -60,24 +56,22 @@ exports.getAllPosts = async (req, res) => {
 
 
 exports.getPostById = async (req,res) => {
-    try {
-        const { id } = req.params;
+    try{
+        const {id} = req.params
 
         const post = await prisma.post.findUnique({
-            where: { id: Number(id) },
+            where: {id: Number(id)},
             include: {
-                author: { select: { id: true, username: true } },
+                author: {select: {id: true, username: true}},
                 comments: true
             }
-        });
-
-        res.json(post);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: err.message }); // use err here
+        })
+        res.json(post)
+    }catch(err){
+        console.error(err)
+        res.status(500).json({error: error.message})
     }
-};
-
+}
 
 exports.updatePost = async (req,res) => {
     try{
