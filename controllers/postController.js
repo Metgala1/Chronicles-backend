@@ -32,20 +32,32 @@ exports.createPost = async (req, res) => {
 };
 
 
-exports.getAllPosts = async (req,res) => {
-    try{
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+
+exports.getAllPosts = async (req, res) => {
+    try {
+        const { limit = 10, offset = 0 } = req.query;
+
         const posts = await prisma.post.findMany({
+            take: parseInt(limit, 10),
+            skip: parseInt(offset, 10),
+            orderBy: {
+                createdAt: 'desc',
+            },
             include: {
-                author: {select: {id: true, username: true}},
+                author: { select: { id: true, username: true } },
                 comments: true
             }
-        })
-        res.json(posts)
-    }catch(err){
+        });
+
+        res.json(posts);
+    } catch (err) {
         console.error(err);
-        res.status(500).json({error: error.message});
+        res.status(500).json({ error: 'Failed to fetch posts.' });
     }
 }
+
 
 exports.getPostById = async (req,res) => {
     try{
